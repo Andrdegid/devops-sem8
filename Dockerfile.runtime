@@ -1,0 +1,26 @@
+# Используем минимальный Alpine
+FROM alpine:3.18 AS runtime
+
+# Создаем непривилегированного пользователя
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Устанавливаем рабочую директорию
+WORKDIR /app
+
+# Копируем бинарник из образа сборки
+COPY --from=builder /output/ownapp .
+
+# Копируем статику (она монтируется как volume)
+COPY static ./static
+
+# Передаем права пользователю
+RUN chown -R appuser:appgroup /app
+
+# Переключаемся на непривилегированного пользователя
+USER appuser
+
+# Открываем порт
+EXPOSE 8080
+
+# Запускаем приложение
+CMD ["./ownapp"]

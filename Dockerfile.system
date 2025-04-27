@@ -1,0 +1,5 @@
+# Используем минимальный образ с Go
+FROM golang:1.21-alpine AS system
+
+# Устанавливаем необходимые пакеты, затем удаляем кеш
+RUN apk add --no-cache git
